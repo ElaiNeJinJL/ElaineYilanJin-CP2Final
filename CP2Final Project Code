@@ -1,0 +1,192 @@
+#include <Adafruit_NeoPixel.h>
+
+#define LED_PIN    10 
+#define LED_COUNT  15  
+#define FLEX_PIN A0  
+#define SPEAKER_PIN 8  
+
+Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_RGBW + NEO_KHZ800);
+
+const int ledPins[] = {2, 3, 4, 5, 6}; 
+
+#define NOTE_C3 131
+#define NOTE_D3 147
+#define NOTE_E3 165
+#define NOTE_F3 175
+#define NOTE_G3 196
+#define NOTE_A3 220
+#define NOTE_B3 247
+
+#define NOTE_C4 262
+#define NOTE_D4 294
+#define NOTE_E4 330
+#define NOTE_F4 349
+#define NOTE_G4 392
+#define NOTE_A4 440
+#define NOTE_B4 494
+
+#define NOTE_C5 523
+#define NOTE_D5 587
+#define NOTE_E5 659
+#define NOTE_F5 698
+#define NOTE_G5 784
+#define NOTE_A5 880
+#define NOTE_B5 988
+
+
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(FLEX_PIN, INPUT);
+  pinMode(SPEAKER_PIN, OUTPUT);
+ strip.begin();            
+  strip.show();             
+  strip.setBrightness(1000); 
+
+  for (int i = 0; i < 5; i++) {
+    pinMode(ledPins[i], OUTPUT);  
+  }
+}
+
+void theaterChase(uint32_t color, int wait) {  
+  for (int a = 0; a < 10; a++) {  
+    for (int b = 0; b < 3; b++) { 
+      strip.clear();             
+
+      for (int c = b; c < strip.numPixels(); c += 3) {
+        strip.setPixelColor(c, color);  
+      }
+      strip.show();                   
+      delay(wait);                     
+    }
+  }
+}
+
+void playHappyTune1() {
+  tone(SPEAKER_PIN, NOTE_C4, 125);
+  delay(150);
+  tone(SPEAKER_PIN, NOTE_E4, 125);
+  delay(150);
+  tone(SPEAKER_PIN, NOTE_G4, 125);
+  delay(150);
+  tone(SPEAKER_PIN, NOTE_C5, 125);
+  delay(150);
+  tone(SPEAKER_PIN, NOTE_E5, 250);  
+  delay(300);
+  noTone(SPEAKER_PIN);  
+}
+
+void playHappyTune2() {
+  tone(SPEAKER_PIN, NOTE_G4, 125); 
+  delay(150);
+  tone(SPEAKER_PIN, NOTE_B4, 125); 
+  delay(150);
+  tone(SPEAKER_PIN, NOTE_D5, 125); 
+  delay(150);
+  tone(SPEAKER_PIN, NOTE_G5, 125); 
+  delay(150);
+  tone(SPEAKER_PIN, NOTE_D5, 125); 
+  delay(150);
+  tone(SPEAKER_PIN, NOTE_B4, 125); 
+  delay(150);
+  tone(SPEAKER_PIN, NOTE_G4, 250); 
+  delay(300);
+  noTone(SPEAKER_PIN); 
+}
+
+void playHappyTune3() {
+  tone(SPEAKER_PIN, NOTE_A4, 125); 
+  delay(150);
+  tone(SPEAKER_PIN, NOTE_C5, 125); 
+  delay(150);
+  tone(SPEAKER_PIN, NOTE_E5, 125); 
+  delay(150);
+  tone(SPEAKER_PIN, NOTE_A5, 125); 
+  delay(150);
+  tone(SPEAKER_PIN, NOTE_G5, 125); 
+  delay(150);
+  tone(SPEAKER_PIN, NOTE_E5, 125); 
+  delay(150);
+  tone(SPEAKER_PIN, NOTE_C5, 250); 
+  delay(300);
+  noTone(SPEAKER_PIN); 
+}
+
+void playHappyTune4() {
+  tone(SPEAKER_PIN, NOTE_B4, 100); 
+  delay(125);
+  tone(SPEAKER_PIN, NOTE_E5, 100); 
+  delay(125);
+  tone(SPEAKER_PIN, NOTE_G5, 100); 
+  delay(125);
+  tone(SPEAKER_PIN, NOTE_B5, 100); 
+  delay(125);
+  tone(SPEAKER_PIN, NOTE_G5, 100); 
+  delay(125);
+  tone(SPEAKER_PIN, NOTE_E5, 100); 
+  delay(125);
+  tone(SPEAKER_PIN, NOTE_B4, 200); 
+  delay(250);
+  noTone(SPEAKER_PIN); 
+}
+
+void playHappyTune5() {
+  tone(SPEAKER_PIN, NOTE_C5, 100); 
+  delay(120);
+  tone(SPEAKER_PIN, NOTE_E5, 100); 
+  delay(120);
+  tone(SPEAKER_PIN, NOTE_G5, 100); 
+  delay(120);
+  tone(SPEAKER_PIN, NOTE_C5, 100); 
+  delay(120);
+  tone(SPEAKER_PIN, NOTE_G5, 100); 
+  delay(120);
+  tone(SPEAKER_PIN, NOTE_E5, 100); 
+  delay(120);
+  tone(SPEAKER_PIN, NOTE_C5, 200); 
+  delay(250);
+  noTone(SPEAKER_PIN); 
+}
+
+void loop() {
+  int flexValue = analogRead(FLEX_PIN); 
+  Serial.print("Flex Value: ");
+  Serial.println(flexValue);
+
+  for (int i = 0; i < 5; i++) {
+    digitalWrite(ledPins[i], LOW);
+  }
+
+  if (flexValue <= 330) {
+    Serial.println("Activating Level 1");
+    digitalWrite(ledPins[0], HIGH);
+    playHappyTune1();
+    theaterChase(strip.Color(255, 255, 255), 50); 
+  } else if (flexValue <= 390) {
+    Serial.println("Activating Level 2");
+    digitalWrite(ledPins[1], HIGH);
+    playHappyTune2();
+    theaterChase(strip.Color(255, 0, 0), 50);
+  } else if (flexValue <= 450) {
+    Serial.println("Activating Level 3");
+    digitalWrite(ledPins[2], HIGH);
+    playHappyTune3();
+    theaterChase(strip.Color(0, 0, 255), 50);
+  } else if (flexValue <= 510) {
+    Serial.println("Activating Level 4");
+    digitalWrite(ledPins[3], HIGH);
+    playHappyTune4();
+    theaterChase(strip.Color(255, 255, 0), 50);
+  } else if (flexValue <= 600) {
+    Serial.println("Activating Level 5");
+    digitalWrite(ledPins[4], HIGH);
+    playHappyTune5();
+    theaterChase(strip.Color(0, 255, 0), 50);
+  }
+
+  delay(500);  
+  for (int i = 0; i < 5; i++) {
+    digitalWrite(ledPins[i], LOW);  
+  }
+  noTone(SPEAKER_PIN);  
+}
